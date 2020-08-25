@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 
 public class Visualizer {
     public Visualizer() {
-        JFrame f = new JFrame("title");
+        JFrame f = new JFrame("aMAZEing Visualizer");
         JPanel mainPanel = new JPanel();
         JPanel mazePanel = new JPanel();
 
@@ -26,6 +26,14 @@ public class Visualizer {
             }
         });
         mainPanel.add(testButton);
+
+        JButton exitButton = new JButton("exit");
+        exitButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mazeComponent.timer.stop();
+            }
+        });
+        mainPanel.add(exitButton);
 
         f.add(mazePanel,BorderLayout.CENTER);
         f.add(mainPanel,BorderLayout.LINE_END);

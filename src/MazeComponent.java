@@ -1,6 +1,7 @@
 package src;
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -19,7 +20,7 @@ public class MazeComponent extends Component {
      *
      */
     private static final long serialVersionUID = 3712257156008500629L;
-    private Image virtualMemory;
+    private BufferedImage virtualMemory;
     private Graphics g;
     private String operationMode = "null";
     Timer timer;
@@ -28,13 +29,19 @@ public class MazeComponent extends Component {
     int z = 0;
 
     public MazeComponent() {
-        virtualMemory = createImage(this.getWidth(), this.getHeight());
-        timer = new Timer(100, new ActionListener() {
+        virtualMemory = new BufferedImage(getPreferredSize().width,getPreferredSize().height,BufferedImage.TYPE_3BYTE_BGR);
+        this.g = virtualMemory.getGraphics();
+        g.setColor(Color.WHITE);
+        g.fillRect(0, 0, getPreferredSize().width, getPreferredSize().height);
+        g.setColor(Color.BLACK);
+        timer = new Timer(200, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent ae) {
                 index += 5;
-                if (index > 50)
+                if (index > 1000)
                     timer.stop();
+                //operation mode logic here
+                g.drawString("test",20,index);
                 repaint();
             }
         });
@@ -42,48 +49,11 @@ public class MazeComponent extends Component {
     }
 
     public Dimension getPreferredSize() {
-        return new Dimension(101, 101);
+        return new Dimension(1000, 1000);
     }
 
     public void paint(Graphics g) {
         g.drawImage(virtualMemory, 0, 0, this);
-        g.drawString("test1", 20, index);
-        virtualMemory = createImage(this.getWidth(), this.getHeight());
-        System.out.println(virtualMemory);
-        try {
-            ImageIO.write((RenderedImage) virtualMemory, "png", new File(++z + ".png"));
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        System.out.println(this.getWidth());
-        /*this.g = g;
-        g.drawRect(0, 0, 100, 100);
-        // test();
-
-        switch (operationMode) {
-            case "null":
-
-                break;
-
-            default:
-                for (int a = 0; a < 100; a += 10) {
-                    g.drawString(operationMode, 20, 20 + a);
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                }
-                System.out.println("test");
-                break;
-        }*/
-
-        /*
-         * if (!operationMode.equals("null")){ g.drawString(operationMode, 20, 20);
-         * System.out.println(2); }
-         */
     }
 
     public void drawOperation(String operationMode) {
