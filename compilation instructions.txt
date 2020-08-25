@@ -1,0 +1,8 @@
+create manifest.mf (2 new lines)
+cd to project directory
+
+
+new
+javac -d bin src\*.java
+jar cvfm Application1.jar MANIFEST.MF -C bin .
+
