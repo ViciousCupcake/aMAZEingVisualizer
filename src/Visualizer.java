@@ -2,8 +2,10 @@ package src;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
-import javax.swing.JApplet;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -14,10 +16,16 @@ public class Visualizer {
         JPanel mainPanel = new JPanel();
         JPanel mazePanel = new JPanel();
 
-        JLabel label = new JLabel("test");
-        mainPanel.add(label);
-
-        mazePanel.add(new MazeComponent());
+        MazeComponent mazeComponent = new MazeComponent();
+        mazePanel.add(mazeComponent);
+        
+        JButton testButton = new JButton("test");
+        testButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                mazeComponent.drawOperation("test123");
+            }
+        });
+        mainPanel.add(testButton);
 
         f.add(mazePanel,BorderLayout.CENTER);
         f.add(mainPanel,BorderLayout.LINE_END);
