@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 
 public class Visualizer {
     public Visualizer() {
+        //button list: pause/play, exit, clear, jcombobox dropdown box algorithm choose, generate maze
         JFrame f = new JFrame("aMAZEing Visualizer");
         JPanel mainPanel = new JPanel();
         JPanel mazePanel = new JPanel();
@@ -30,7 +31,7 @@ public class Visualizer {
         JButton exitButton = new JButton("exit");
         exitButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                mazeComponent.timer.stop();
+                f.dispose();
             }
         });
         mainPanel.add(exitButton);
