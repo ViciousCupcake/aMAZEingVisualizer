@@ -10,10 +10,10 @@ import java.awt.Color;
  */
 public class MazeSquareEntry {
     private Color c;
-    private int x;
-    private int y;
+    private int[] x;
+    private int[] y;
 
-    public MazeSquareEntry(Color c, int x, int y) {
+    public MazeSquareEntry(Color c, int[] x, int[] y) {
         this.c = c;
         this.x = x;
         this.y = y;
@@ -23,11 +23,11 @@ public class MazeSquareEntry {
         return c;
     }
 
-    public int getX() {
+    public int[] getX() {
         return x;
     }
 
-    public int getY() {
+    public int[] getY() {
         return y;
     }
 }
