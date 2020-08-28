@@ -141,7 +141,7 @@ public class Visualizer {
         JButton clearButton = new JButton("Clear");
         clearButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                clearMaze(mazePanel, cardLayout);
+                clearMaze(mazePanel, cardLayout, true);
             }
         });
 
@@ -182,13 +182,17 @@ public class Visualizer {
         mazeComponent.startTimer();
     }
 
-    private void clearMaze(JPanel parent, CardLayout cardLayout) {
+    private void clearMaze(JPanel parent, CardLayout cardLayout, boolean log) {
         MazeComponent temp = new MazeComponent(nestedTextArea, mazeComponent.getTimerDelay());
         parent.add(temp);
         parent.remove(mazeComponent);
         cardLayout.next(parent);
         mazeComponent.stopTimer();
         mazeComponent = temp;
+        if(log)
+            logClearedMaze();
+    }
+    private void logClearedMaze(){
         nestedTextArea.append("Cleared Maze\n");
     }
 }
