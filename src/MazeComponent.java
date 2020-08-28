@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.LinkedList;
 
+import javax.swing.JTextArea;
 import javax.swing.Timer;
 
 public class MazeComponent extends Component {
@@ -24,7 +25,8 @@ public class MazeComponent extends Component {
     private int numSquares = 25; // Must be odd number
     private int timerDelay = 15;
 
-    public MazeComponent() {
+    public MazeComponent(JTextArea log, int timerDelay) {
+        this.timerDelay = timerDelay;
         virtualMemory = new BufferedImage(getPreferredSize().width, getPreferredSize().height,
                 BufferedImage.TYPE_3BYTE_BGR);
         this.g = virtualMemory.getGraphics();
@@ -51,7 +53,7 @@ public class MazeComponent extends Component {
                 }
                 if (entries.isEmpty()) {
                     timer.stop();
-                    System.out.println("Stopped timer due to no entries");
+                    log.append("Done\n");
                 }
                 repaint();
             }
@@ -80,7 +82,7 @@ public class MazeComponent extends Component {
         timer.setDelay(timerDelay);
     }
 
-    public int getTimerDelay(){
+    public int getTimerDelay() {
         return timerDelay;
     }
 

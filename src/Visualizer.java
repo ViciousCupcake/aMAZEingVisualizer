@@ -1,6 +1,7 @@
 package src;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -20,32 +21,26 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 public class Visualizer {
+    MazeComponent mazeComponent;
+    JTextArea nestedTextArea;
+
     public Visualizer() {
         // button list: start/stop x 2, exit, clear, jcombobox dropdown box algorithm
         // choose, log box
         JFrame f = new JFrame("aMAZEing Visualizer");
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        JPanel mazePanel = new JPanel();
+        CardLayout cardLayout = new CardLayout();
+        JPanel mazePanel = new JPanel(cardLayout);
 
-        MazeComponent mazeComponent = new MazeComponent();
+        nestedTextArea = new JTextArea(5, 20);
+        nestedTextArea.setLineWrap(true);
+        nestedTextArea.setEditable(false);
+
+        mazeComponent = new MazeComponent(nestedTextArea, 15);
         mazePanel.add(mazeComponent);
+        cardLayout.next(mazePanel);
         mazePanel.setBorder(BorderFactory.createTitledBorder("Maze Display"));
-
-        JButton testButton = new JButton("test");
-        testButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                testMazeComponent(mazeComponent);
-            }
-        });
-
-        JButton exitButton = new JButton("exit");
-        exitButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.out.println(f.getSize());
-                f.dispose();
-            }
-        });
 
         JPanel mazeGenerationPanel = new JPanel(new BorderLayout());
         JPanel mazeGenerationSubpanel1 = new JPanel();
@@ -62,11 +57,15 @@ public class Visualizer {
         JButton mazeGenerationStartButton = new JButton("Start");
         mazeGenerationStartButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                // nestedtextarea.append starting generation
+
             }
         });
         JButton mazeGenerationStopButton = new JButton("Stop");
         mazeGenerationStartButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                // nestedtextarea.append stopping generation
+
             }
         });
         mazeGenerationSubpanel2.add(mazeGenerationStartButton);
@@ -89,11 +88,14 @@ public class Visualizer {
         JButton mazeSolverStartButton = new JButton("Start");
         mazeSolverStartButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                // nestedtextarea.append starting solver
             }
         });
         JButton mazeSolverStopButton = new JButton("Stop");
         mazeSolverStopButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                // nestedtextarea.append stopping solver
+
             }
         });
         mazeSolverSubpanel2.add(mazeSolverStartButton);
@@ -122,9 +124,7 @@ public class Visualizer {
             }
         });
         miscSubpanel2.add(miscSpeedScrollBar);
-        JTextArea nestedTextArea = new JTextArea(5, 20);
-        nestedTextArea.setLineWrap(true);
-        nestedTextArea.setEditable(false);
+
         JScrollPane miscLogScrollPane = new JScrollPane(nestedTextArea);
 
         // miscLogScrollPane.setPreferredSize(new Dimension(200,100));
@@ -132,7 +132,27 @@ public class Visualizer {
         miscSubpanel4.add(miscLogScrollPane);
 
         miscPanel.setBorder(BorderFactory.createTitledBorder("Miscellaneous"));
+        JButton testButton = new JButton("Test");
+        testButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                testMazeComponent(mazeComponent);
+            }
+        });
+        JButton clearButton = new JButton("Clear");
+        clearButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                clearMaze(mazePanel, cardLayout);
+            }
+        });
+
+        JButton exitButton = new JButton("Exit");
+        exitButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                f.dispose();
+            }
+        });
         miscSubpanel5.add(testButton);
+        miscSubpanel5.add(clearButton);
         miscSubpanel5.add(exitButton);
         miscPanel.add(miscSubpanel1);
         miscPanel.add(miscSubpanel2);
@@ -160,5 +180,15 @@ public class Visualizer {
             }
         }
         mazeComponent.startTimer();
+    }
+
+    private void clearMaze(JPanel parent, CardLayout cardLayout) {
+        MazeComponent temp = new MazeComponent(nestedTextArea, mazeComponent.getTimerDelay());
+        parent.add(temp);
+        parent.remove(mazeComponent);
+        cardLayout.next(parent);
+        mazeComponent.stopTimer();
+        mazeComponent = temp;
+        nestedTextArea.append("Cleared Maze\n");
     }
 }
