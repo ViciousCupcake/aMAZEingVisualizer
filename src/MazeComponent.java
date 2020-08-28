@@ -80,6 +80,10 @@ public class MazeComponent extends Component {
         timer.setDelay(timerDelay);
     }
 
+    public int getTimerDelay(){
+        return timerDelay;
+    }
+
     public void drawSquare(Color c, int[] x, int[] y) {
         entries.add(new MazeSquareEntry(c, x, y));
     }
