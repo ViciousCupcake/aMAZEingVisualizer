@@ -89,4 +89,8 @@ public class MazeComponent extends Component {
     public void drawSquare(Color c, int[] x, int[] y) {
         entries.add(new MazeSquareEntry(c, x, y));
     }
+
+    public int getNumSquares(){
+        return numSquares;
+    }
 }
