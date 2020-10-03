@@ -8,6 +8,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -135,7 +138,8 @@ public class Visualizer {
         JButton testButton = new JButton("Test");
         testButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                testMazeComponent(mazeComponent);
+                // testMazeComponent(mazeComponent);
+                DFSMazeGeneration(mazeComponent);
             }
         });
         JButton clearButton = new JButton("Clear");
@@ -182,6 +186,95 @@ public class Visualizer {
         mazeComponent.startTimer();
     }
 
+    public void DFSMazeGeneration(MazeComponent mazeComponent) {
+        // Start at top left.
+        int r = 1;
+        int c = 1;
+
+        boolean[][] maze = new boolean[mazeComponent.getNumSquares()][mazeComponent.getNumSquares()];
+        // Initialize, true means it is a wall.
+        for (int i = 0; i < mazeComponent.getNumSquares(); i++)
+            Arrays.fill(maze[i], true);
+
+        maze[r][c] = false;
+        mazeComponent.drawSquare(Color.WHITE, new int[]{r}, new int[]{c});
+        DFSMazeGenerationHelper(r, c, maze, mazeComponent);
+        mazeComponent.startTimer();
+    }
+
+    private void DFSMazeGenerationHelper(int r, int c, boolean[][] maze, MazeComponent mazeComponent) {
+
+        // 4 random directions
+        Integer[] randDirs = generateRandomDirections();
+        // Examine each direction
+        for (int i = 0; i < randDirs.length; i++) {
+            switch (randDirs[i]) {
+                case 1: // Up
+                    // Whether 2 cells up is out or not
+                    if (r - 2 <= 0)
+                        continue;
+                    if (maze[r - 2][c] != false) {
+                        maze[r - 2][c] = false;
+                        maze[r - 1][c] = false;
+                        mazeComponent.drawSquare(Color.WHITE, new int[] { r - 2, r - 1 }, new int[] { c, c });
+                        DFSMazeGenerationHelper(r - 2, c, maze, mazeComponent);
+                    }
+                    break;
+                case 2: // Right
+                    // Whether 2 cells to the right is out or not
+                    if (c + 2 >= maze.length - 1)
+                        continue;
+                    if (maze[r][c + 2] != false) {
+                        maze[r][c + 2] = false;
+                        maze[r][c + 1] = false;
+                        mazeComponent.drawSquare(Color.WHITE, new int[] { r, r }, new int[] { c + 2, c + 1 });
+
+                        DFSMazeGenerationHelper(r, c + 2, maze, mazeComponent);
+                    }
+                    break;
+                case 3: // Down
+                    // Whether 2 cells down is out or not
+                    if (r + 2 >= maze.length - 1)
+                        continue;
+                    if (maze[r + 2][c] != false) {
+                        maze[r + 2][c] = false;
+                        maze[r + 1][c] = false;
+                        mazeComponent.drawSquare(Color.WHITE, new int[] { r + 2, r + 1 }, new int[] { c, c });
+
+                        DFSMazeGenerationHelper(r + 2, c, maze, mazeComponent);
+                    }
+                    break;
+                case 4: // Left
+                    // Whether 2 cells to the left is out or not
+                    if (c - 2 <= 0)
+                        continue;
+                    if (maze[r][c - 2] != false) {
+                        maze[r][c - 2] = false;
+                        maze[r][c - 1] = false;
+                        mazeComponent.drawSquare(Color.WHITE, new int[] { r, r }, new int[] { c - 2, c - 1 });
+
+                        DFSMazeGenerationHelper(r, c - 2, maze, mazeComponent);
+                    }
+                    break;
+            }
+        }
+
+    }
+
+    /**
+     * Generate an array with random directions 1-4
+     * 
+     * @return Array containing 4 directions in random order
+     */
+    public Integer[] generateRandomDirections() {
+        ArrayList<Integer> randoms = new ArrayList<Integer>();
+        for (int i = 0; i < 4; i++)
+            randoms.add(i + 1);
+        Collections.shuffle(randoms);
+
+        return randoms.toArray(new Integer[4]);
+    }
+
     private void clearMaze(JPanel parent, CardLayout cardLayout, boolean log) {
         MazeComponent temp = new MazeComponent(nestedTextArea, mazeComponent.getTimerDelay());
         parent.add(temp);
@@ -189,10 +282,11 @@ public class Visualizer {
         cardLayout.next(parent);
         mazeComponent.stopTimer();
         mazeComponent = temp;
-        if(log)
+        if (log)
             logClearedMaze();
     }
-    private void logClearedMaze(){
+
+    private void logClearedMaze() {
         nestedTextArea.append("Cleared Maze\n");
     }
 }
