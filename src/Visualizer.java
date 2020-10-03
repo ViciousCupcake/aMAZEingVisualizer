@@ -8,9 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -26,6 +25,7 @@ import javax.swing.JTextArea;
 public class Visualizer {
     MazeComponent mazeComponent;
     JTextArea nestedTextArea;
+    boolean[][] currentMaze;
 
     public Visualizer() {
         // button list: start/stop x 2, exit, clear, jcombobox dropdown box algorithm
@@ -52,7 +52,7 @@ public class Visualizer {
         mazeGenerationPanel.setBorder(BorderFactory.createTitledBorder("Maze Generation"));
         JLabel generationAlgorithmLabel = new JLabel("Algorithm to use:");
         mazeGenerationSubpanel1.add(generationAlgorithmLabel);
-        JComboBox<String> generationAlgorithmComboBox = new JComboBox<String>(new String[] {});
+        JComboBox<String> generationAlgorithmComboBox = new JComboBox<String>(new String[] { "DepthFirstSearch" });
         generationAlgorithmComboBox
                 .setPreferredSize(new Dimension(200, generationAlgorithmComboBox.getPreferredSize().height));
         // replaceAll("(.)([A-Z])", "$1 $2")
@@ -60,7 +60,12 @@ public class Visualizer {
         JButton mazeGenerationStartButton = new JButton("Start");
         mazeGenerationStartButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // nestedtextarea.append starting generation
+                currentMaze = (boolean[][]) invokeMethodFromClass(
+                        "src.MazeGeneration.".concat((String) generationAlgorithmComboBox.getSelectedItem()),
+                        "generate", mazeComponent);
+
+                nestedTextArea.append(String.format("Started Generation using %s%n",
+                        (String) generationAlgorithmComboBox.getSelectedItem()));
 
             }
         });
@@ -91,7 +96,13 @@ public class Visualizer {
         JButton mazeSolverStartButton = new JButton("Start");
         mazeSolverStartButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                // nestedtextarea.append starting solver
+                currentMaze = (boolean[][]) invokeMethodFromClass(
+                        "src.MazeGeneration.".concat((String) solverAlgorithmComboBox.getSelectedItem()),
+                        "solve", mazeComponent);
+
+                nestedTextArea.append(String.format("Started Solving using %s%n",
+                        (String) solverAlgorithmComboBox.getSelectedItem()));
+
             }
         });
         JButton mazeSolverStopButton = new JButton("Stop");
@@ -139,7 +150,7 @@ public class Visualizer {
         testButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // testMazeComponent(mazeComponent);
-                DFSMazeGeneration(mazeComponent);
+                // DepthFirstSearch.generateMaze(mazeComponent);
             }
         });
         JButton clearButton = new JButton("Clear");
@@ -186,95 +197,6 @@ public class Visualizer {
         mazeComponent.startTimer();
     }
 
-    public void DFSMazeGeneration(MazeComponent mazeComponent) {
-        // Start at top left.
-        int r = 1;
-        int c = 1;
-
-        boolean[][] maze = new boolean[mazeComponent.getNumSquares()][mazeComponent.getNumSquares()];
-        // Initialize, true means it is a wall.
-        for (int i = 0; i < mazeComponent.getNumSquares(); i++)
-            Arrays.fill(maze[i], true);
-
-        maze[r][c] = false;
-        mazeComponent.drawSquare(Color.WHITE, new int[]{r}, new int[]{c});
-        DFSMazeGenerationHelper(r, c, maze, mazeComponent);
-        mazeComponent.startTimer();
-    }
-
-    private void DFSMazeGenerationHelper(int r, int c, boolean[][] maze, MazeComponent mazeComponent) {
-
-        // 4 random directions
-        Integer[] randDirs = generateRandomDirections();
-        // Examine each direction
-        for (int i = 0; i < randDirs.length; i++) {
-            switch (randDirs[i]) {
-                case 1: // Up
-                    // Whether 2 cells up is out or not
-                    if (r - 2 <= 0)
-                        continue;
-                    if (maze[r - 2][c] != false) {
-                        maze[r - 2][c] = false;
-                        maze[r - 1][c] = false;
-                        mazeComponent.drawSquare(Color.WHITE, new int[] { r - 2, r - 1 }, new int[] { c, c });
-                        DFSMazeGenerationHelper(r - 2, c, maze, mazeComponent);
-                    }
-                    break;
-                case 2: // Right
-                    // Whether 2 cells to the right is out or not
-                    if (c + 2 >= maze.length - 1)
-                        continue;
-                    if (maze[r][c + 2] != false) {
-                        maze[r][c + 2] = false;
-                        maze[r][c + 1] = false;
-                        mazeComponent.drawSquare(Color.WHITE, new int[] { r, r }, new int[] { c + 2, c + 1 });
-
-                        DFSMazeGenerationHelper(r, c + 2, maze, mazeComponent);
-                    }
-                    break;
-                case 3: // Down
-                    // Whether 2 cells down is out or not
-                    if (r + 2 >= maze.length - 1)
-                        continue;
-                    if (maze[r + 2][c] != false) {
-                        maze[r + 2][c] = false;
-                        maze[r + 1][c] = false;
-                        mazeComponent.drawSquare(Color.WHITE, new int[] { r + 2, r + 1 }, new int[] { c, c });
-
-                        DFSMazeGenerationHelper(r + 2, c, maze, mazeComponent);
-                    }
-                    break;
-                case 4: // Left
-                    // Whether 2 cells to the left is out or not
-                    if (c - 2 <= 0)
-                        continue;
-                    if (maze[r][c - 2] != false) {
-                        maze[r][c - 2] = false;
-                        maze[r][c - 1] = false;
-                        mazeComponent.drawSquare(Color.WHITE, new int[] { r, r }, new int[] { c - 2, c - 1 });
-
-                        DFSMazeGenerationHelper(r, c - 2, maze, mazeComponent);
-                    }
-                    break;
-            }
-        }
-
-    }
-
-    /**
-     * Generate an array with random directions 1-4
-     * 
-     * @return Array containing 4 directions in random order
-     */
-    public Integer[] generateRandomDirections() {
-        ArrayList<Integer> randoms = new ArrayList<Integer>();
-        for (int i = 0; i < 4; i++)
-            randoms.add(i + 1);
-        Collections.shuffle(randoms);
-
-        return randoms.toArray(new Integer[4]);
-    }
-
     private void clearMaze(JPanel parent, CardLayout cardLayout, boolean log) {
         MazeComponent temp = new MazeComponent(nestedTextArea, mazeComponent.getTimerDelay());
         parent.add(temp);
@@ -288,5 +210,18 @@ public class Visualizer {
 
     private void logClearedMaze() {
         nestedTextArea.append("Cleared Maze\n");
+    }
+
+    private Object invokeMethodFromClass(String className, String methodName, Object... args) {
+        Class<?> c;
+        try {
+            c = Class.forName(className);
+            Method m = c.getDeclaredMethod(methodName, new Class[] { MazeComponent.class });
+            return m.invoke(mazeComponent, args);
+        } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException
+                | IllegalArgumentException | InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
